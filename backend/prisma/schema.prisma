@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum scrape_status {
+  success
+  failed
+  pending
+  running
+  canceled
+  scheduled
+}
+
+enum scrape_source {
+  jobstreet
+  glints
+}
+
+model scrape_session {
+  scrape_session_id       String                  @id @default(uuid())
+  created_at              DateTime                @default(now())
+  
+  started_at              DateTime?
+  finished_at             DateTime?
+  status                  scrape_status           @default(pending)
+  percentage              Int                     @default(0)
+  job_trends_information  job_trend_information[]
+  scheduled_run           DateTime?
+  source                  scrape_source  
+}
+
+model job_trend_information {
+  job_trend_information_id  String                @id @default(uuid())
+  scrape_session_id         String
+  scrape_session            scrape_session        @relation(fields: [scrape_session_id], references: [scrape_session_id])
+  created_at                DateTime              @default(now())
+
+  job_title                     String
+  job_category                  String
+  job_sub_category              String
+  job_posted                    DateTime
+  job_work_type                 String
+  job_category_normalization    String
+  job_salary                    String?
+  job_source                    scrape_source
+  job_location                  String
+  job_detail_url                String @db.VarChar(1000)
+}
+
+  //company bisa dipertimbangkan
