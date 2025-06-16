@@ -1,6 +1,6 @@
 import { Column } from "@ant-design/plots";
 import { Card, Empty, message, Select, Spin, Typography } from "antd";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Api from "../../../../services/Api";
 
 const { Text } = Typography;
@@ -44,15 +44,16 @@ const JobstreetJobCategoryCard = () => {
   const config = {
     data: chartData,
     xField: "label",
-    yField: "value",
+    yField: "total",
     shapeField: "column25D",
     style: {
-      fill: "rgba(126, 212, 236, 0.8)",
+      fill: "rgba(220, 54, 46, 0.7)",
     },
     height: 300,
+    
   };
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const params = {
@@ -67,9 +68,8 @@ const JobstreetJobCategoryCard = () => {
 
       const jobCategoryData = response.data.dataset.map((item) => ({
         label: item.category,
-        value: item.amount,
+        total: item.amount,
       }));
-
       setChartData(jobCategoryData);
     } catch (error) {
       console.error("Error fetching job category data:", error);
@@ -78,16 +78,16 @@ const JobstreetJobCategoryCard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedYear, selectedMonth]);
 
   useEffect(() => {
     fetchData();
-  }, [selectedYear, selectedMonth]);
+  }, [fetchData]);
 
   const renderChart = () => {
     if (loading) {
       return (
-        <div className="flex justify-center items-center h-64">
+        <div className="flex justify-center items-center h-72">
           <Spin size="large" />
         </div>
       );
@@ -96,12 +96,14 @@ const JobstreetJobCategoryCard = () => {
     if (!chartData || chartData.length === 0) {
       return <Empty description="No data available" />;
     }
+
+     return <Column {...config} />;
   };
 
   return (
     <Card>
       <div className="flex justify-between items-center mb-4">
-        <Text className="font-bold text-xl">Jobstreet Job Category</Text>
+        <Text className="font-bold text-xl">Job Category</Text>
         <div className="space-x-2">
           <Select
             value={selectedMonth}
@@ -123,8 +125,7 @@ const JobstreetJobCategoryCard = () => {
           </Select>
         </div>
       </div>
-      {renderChart()}
-      <Column {...config} />
+      {renderChart()}      
     </Card>
   );
 };
