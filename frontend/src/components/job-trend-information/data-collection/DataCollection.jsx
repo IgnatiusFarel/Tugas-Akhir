@@ -8,13 +8,13 @@ const { Content } = Layout;
 
 const DataCollection = () => {
   const [data, setData] = useState([]);
-  const [page, setPage] = useState(1);  
+  const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalData, setTotalData] = useState(0);
   const [loading, setLoading] = useState(false);
   const [sourceFilter, setSourceFilter] = useState("");
 
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
 
@@ -25,7 +25,6 @@ const DataCollection = () => {
       year: "numeric",
       month: "long",
       day: "numeric",
-      
     }).format(date);
   };
 
@@ -63,11 +62,11 @@ const DataCollection = () => {
       dataIndex: "job_category",
       key: "job_category",
     },
-    {
-      title: "Job Category Normalization",
-      dataIndex: "job_category_normalization",
-      key: "job_category_normalization",
-    },
+    // {
+    //   title: "Job Category Normalization",
+    //   dataIndex: "job_category_normalization",
+    //   key: "job_category_normalization",
+    // },
     {
       title: "Job Work Type",
       dataIndex: "job_work_type",
@@ -82,6 +81,7 @@ const DataCollection = () => {
       title: "Job Salary",
       dataIndex: "job_salary",
       key: "job_salary",
+        render: (text) => text ? text : <span className="italic text-gray-400">Salary not displayed</span>,
     },
     {
       title: "Job Source",
@@ -107,20 +107,20 @@ const DataCollection = () => {
 
   const fetchData = () => {
     setLoading(true);
-    
+
     let url = `/data-collection?page=${page}&pageSize=${pageSize}&sortBy=${sortBy}&sortOrder=${sortOrder}`;
-    
+
     if (sourceFilter) {
       url += `&source=${encodeURIComponent(sourceFilter)}`;
     }
-    
+
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
     }
-    
+
     Api.get(url)
       .then((response) => {
-        setData(response.data); 
+        setData(response.data);
         setTotalData(response.totalData);
         setLoading(false);
       })
@@ -135,9 +135,9 @@ const DataCollection = () => {
   }, [page, pageSize, sourceFilter, search, sortBy, sortOrder]);
 
   const handleSearch = (value) => {
-    setSearch(value); 
+    setSearch(value);
     setPage(1);
-  }
+  };
 
   const handleSortChange = (value) => {
     if (value === "newest") {
@@ -163,15 +163,15 @@ const DataCollection = () => {
   return (
     <Content className="p-6 mt-3">
       <div className="flex flex-row space-x-2">
-        <div className="relative w-64">
-          <Input
-            placeholder="Search"
-            className="pl-10 pr-3 py-2"
-            style={{ width: 250, height: 48, borderRadius: "12px" }}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-          <SearchOutlined className="absolute left-3 top-3 size-5 text-red-600" />
-        </div>
+        <Input
+          placeholder="Search"
+          prefix={<SearchOutlined className="text-red-600" />}
+          className="py-2"
+          style={{ width: 250, height: 48, borderRadius: "12px" }}
+          onChange={(e) => handleSearch(e.target.value)}
+          allowClear
+        />
+
         <Select
           defaultValue="newest"
           className="rounded-xl"
@@ -213,7 +213,7 @@ const DataCollection = () => {
         loading={loading}
         pagination={false}
         footer={() => (
-          <Pagination          
+          <Pagination
             current={page}
             pageSize={pageSize}
             total={totalData}
