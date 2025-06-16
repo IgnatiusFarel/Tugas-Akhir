@@ -12,6 +12,7 @@ const GlintsJobSubCategoryCard = () => {
   const currentMonth = new Date().getMonth() + 1;
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedLimit, setSelectedLimit] = useState(5);
 
   const generateYearOptions = () => {
     const years = [];
@@ -59,6 +60,7 @@ const GlintsJobSubCategoryCard = () => {
         source: "glints",
         month: selectedMonth,
         year: selectedYear,
+        limit: selectedLimit,
       };
       const response = await Api.get("/data-visualization/job-sub-categories", {
         params
@@ -75,7 +77,7 @@ const GlintsJobSubCategoryCard = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear, selectedLimit]);
 
   useEffect(() => {
     fetchData();
@@ -104,7 +106,7 @@ const GlintsJobSubCategoryCard = () => {
           <Select
             value={selectedMonth}
             onChange={setSelectedMonth}
-            style={{width: 130, height:48}}
+            style={{width: 110, height:48}}
           >
        {monthOptions.map((month) => (
               <Select.Option key={month.value} value={month.value}>
@@ -115,10 +117,20 @@ const GlintsJobSubCategoryCard = () => {
           <Select
             value={selectedYear}
             onChange={setSelectedYear}
-            style={{ width: 100, height: 48 }}
+            style={{ width: 80, height: 48 }}
           >
             {generateYearOptions()}
           </Select>
+               <Select
+                      value={selectedLimit}
+                      onChange={setSelectedLimit}
+                      style={{ width: 85, height: 48 }}
+                    >
+                       <Select.Option value={5}>Top 5</Select.Option>
+            <Select.Option value={7}>Top 7</Select.Option>
+            <Select.Option value={10}>Top 10</Select.Option>
+            <Select.Option value={14}>Top 14</Select.Option>
+                    </Select>
         </div>
       </div>
       {renderChart()}
