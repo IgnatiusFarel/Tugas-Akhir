@@ -8,6 +8,8 @@ import JobDetailDataModal from "./JobDetailDataModal";
 import {ExportOutlined, SyncOutlined } from "@ant-design/icons";
 import { Button, Card, Layout, message, Popconfirm, Progress, Table, Typography } from "antd";
 import { CalendarDots, ClockClockwise, CaretRight, CaretDown, FileCsv, FileJs, Link, Scan, Trash } from "@phosphor-icons/react";
+import glintsLogo from "../../../assets/Glints.png";
+import  jobstreetLogo  from "../../../assets/Jobstreet.jpg";
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -497,7 +499,7 @@ const ExtractData = () => {
           <Card className="shadow-lg rounded-xl">
             <div className="flex flex-row items-center space-x-4">
               <img
-                src="https://blob.cloudcomputing.id/images/b6e40122-58b5-485c-b2f1-4d53089cc838/logo-jobstreet-by-seek-l-min.jpg"
+                src={jobstreetLogo}
                 alt="JobStreet Logo"
                 className="w-18 h-14 mb-2 border rounded-lg"
               />
@@ -590,8 +592,8 @@ const ExtractData = () => {
           <Card className="shadow-lg rounded-xl">
             <div className="flex flex-row items-center space-x-4">
               <img
-                src="https://radaraktual.com/wp-content/uploads/2022/12/1-potret-kang-dedi-mulyadi-saat-mengunjungi-salah-satu-proyek-di-purwakarta-1.png"
-                alt="JobStreet Logo"
+                src={glintsLogo}
+                alt="Glints Logo"
                 className="w-24 h-18 mb-2 border rounded-lg"
               />
               <h2 className="text-xl font-semibold mb-2">Glints</h2>
