@@ -81,7 +81,12 @@ const DataCollection = () => {
       title: "Job Salary",
       dataIndex: "job_salary",
       key: "job_salary",
-        render: (text) => text ? text : <span className="italic text-gray-400">Salary not displayed</span>,
+      render: (text) =>
+        text ? (
+          text
+        ) : (
+          <span className="italic text-gray-400">Salary not displayed</span>
+        ),
     },
     {
       title: "Job Source",
@@ -189,7 +194,7 @@ const DataCollection = () => {
         />
         <Select
           value={sourceFilter}
-          style={{ width: 150, height: 48, borderRadius: "12px" }}
+          style={{ width: 130, height: 48, borderRadius: "12px" }}
           onChange={handleSourceFilterChange}
           options={[
             {
