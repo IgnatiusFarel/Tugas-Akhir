@@ -125,7 +125,7 @@ const GlintsJobWorkTypeCard = () => {
           <Select
             value={selectedMonth}
             onChange={setSelectedMonth}
-            style={{ width: 130, height: 48 }}
+            style={{ width: 110, height: 48 }}
           >
             {monthOptions.map((month) => (
               <Select.Option key={month.value} value={month.value}>
@@ -136,7 +136,7 @@ const GlintsJobWorkTypeCard = () => {
           <Select
             value={selectedYear}
             onChange={setSelectedYear}
-            style={{ width: 100, height: 48 }}
+            style={{ width: 80, height: 48 }}
           >
             {generateYearOptions()}
           </Select>
