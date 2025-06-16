@@ -23,7 +23,7 @@ const JobDetailDataTable = ({ sessionId }) => {
   const columns = [
     {
       title: "No",
-      key: "no",     
+      key: "no",
       render: (text, record, index) => (page - 1) * pageSize + index + 1,
     },
     {
@@ -61,6 +61,12 @@ const JobDetailDataTable = ({ sessionId }) => {
       title: "Job Salary",
       dataIndex: "job_salary",
       key: "job_salary",
+      render: (text) =>
+        text ? (
+          text
+        ) : (
+          <span className="italic text-gray-400">Salary not displayed</span>
+        ),
     },
     {
       title: "Job Source",
@@ -85,14 +91,14 @@ const JobDetailDataTable = ({ sessionId }) => {
     },
   ];
 
-  const fetchData = () => {    
+  const fetchData = () => {
     if (!sessionId) {
       console.error("No session ID provided to JobDetailDataTable");
       return;
     }
     setLoading(true);
     Api.get(`/extract-data/${sessionId}`, {
-      params: { page, pageSize }
+      params: { page, pageSize },
     })
       .then((response) => {
         setData(response.data);
@@ -105,12 +111,11 @@ const JobDetailDataTable = ({ sessionId }) => {
       });
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     if (sessionId) {
       fetchData();
     }
   }, [sessionId, page, pageSize]);
-
 
   const handlePageChange = (page, pageSize) => {
     setPage(page);
