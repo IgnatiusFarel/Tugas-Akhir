@@ -12,6 +12,7 @@ const JobstreetJobSalaryCard = () => {
   const currentMonth = new Date().getMonth() + 1;
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedLimit, setSelectedLimit] = useState(5);
 
   const generateYearOptions = () => {
     const years = [];
@@ -59,6 +60,7 @@ const JobstreetJobSalaryCard = () => {
         source: "jobstreet",
         month: selectedMonth,
         year: selectedYear,
+        limit: selectedLimit,
       };
       const response = await Api.get("/data-visualization/job-salaries", {
         params,
@@ -76,7 +78,7 @@ const JobstreetJobSalaryCard = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedYear, selectedMonth]);
+  }, [selectedYear, selectedMonth, selectedLimit]);
 
   useEffect(() => {
     fetchData();
@@ -100,28 +102,38 @@ const JobstreetJobSalaryCard = () => {
   return (
     <Card>
       <div className="flex justify-between items-center mb-4">
-       <Text className="font-bold text-xl block mb-4">Job Salary</Text>
-      
-      <div className="space-x-2">
-         <Select
+        <Text className="font-bold text-xl block mb-4">Job Salary</Text>
+
+        <div className="space-x-2">
+          <Select
             value={selectedMonth}
             onChange={setSelectedMonth}
-            style={{ width: 130, height: 48 }}
+            style={{ width: 110, height: 48 }}
           >
             {monthOptions.map((month) => (
               <Select.Option key={month.value} value={month.value}>
                 {month.label}
               </Select.Option>
-          ))}
+            ))}
           </Select>
           <Select
             value={selectedYear}
             onChange={setSelectedYear}
-            style={{ width: 100, height: 48 }}
+            style={{ width: 80, height: 48 }}
           >
             {generateYearOptions()}
           </Select>
-      </div>
+          <Select
+            value={selectedLimit}
+            onChange={setSelectedLimit}
+            style={{ width: 85, height: 48 }}
+          >
+            <Select.Option value={5}>Top 5</Select.Option>
+            <Select.Option value={7}>Top 7</Select.Option>
+            <Select.Option value={10}>Top 10</Select.Option>
+            <Select.Option value={14}>Top 14</Select.Option>
+          </Select>
+        </div>
       </div>
       {renderChart()}
     </Card>
