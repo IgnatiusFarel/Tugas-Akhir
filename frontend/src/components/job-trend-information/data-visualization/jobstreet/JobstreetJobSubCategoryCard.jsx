@@ -1,15 +1,45 @@
 import { Column } from "@ant-design/plots";
-import { Card, message, Select, Typography } from "antd";
-import { useEffect, useState } from "react";
+import { Card, Empty, message, Select, Spin, Typography } from "antd";
+import { useCallback, useEffect, useState } from "react";
 import Api from "../../../../services/Api";
 
 const { Text } = Typography;
 
 const JobstreetJobSubCategoryCard = () => {
   const [loading, setLoading] = useState(false);
-  const [chartData, setChartData] = useState([])
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [chartData, setChartData] = useState([]);
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+
+  const generateYearOptions = () => {
+    const years = [];
+    for (let i = 0; i < 5; i++) {
+      const year = currentYear + i;
+      years.push(
+        <Select.Option key={year} value={year}>
+          {year}
+        </Select.Option>
+      );
+    }
+    return years;
+  };
+
+  const monthOptions = [
+    { value: 1, label: "January" },
+    { value: 2, label: "February" },
+    { value: 3, label: "March" },
+    { value: 4, label: "April" },
+    { value: 5, label: "May" },
+    { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "August" },
+    { value: 9, label: "September" },
+    { value: 10, label: "October" },
+    { value: 11, label: "November" },
+    { value: 12, label: "December" },
+  ];
 
   const config = {
     data: chartData,
@@ -17,64 +47,84 @@ const JobstreetJobSubCategoryCard = () => {
     yField: "value",
     shapeField: "column25D",
     style: {
-      fill: "rgba(126, 212, 236, 0.8)",
+      fill: "rgba(220, 54, 46, 0.7)",
     },
     height: 300,
   };
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await Api.get(`/data-visualization/job-sub-categories?source=jobstreet`)
-      const jobCategoryData = response.data.dataset.map(item => ({
+      const params = {
+        source: "jobstreet",
+        year: selectedYear,
+        month: selectedMonth,
+      };
+
+      const response = await Api.get("/data-visualization/job-sub-categories", {
+        params,
+      });
+
+      const jobSubCategoryData = response.data.dataset.map((item) => ({
         label: item.subCategory,
-        value: item.amount 
+        value: item.amount,
       }));
-      setChartData(jobCategoryData)
+      setChartData(jobSubCategoryData);
     } catch (error) {
-      console.error('Error fetching job category data:', error);
-      message.error('Failed to load job category data');
+      console.error("Error fetching job category data:", error);
+      message.error("Failed to load job sub category data");
+      setChartData([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedYear, selectedMonth]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const renderChart = () => {
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center h-64">
+          <Spin size="large" />
+        </div>
+      );
+    }
+
+    if (!chartData || chartData.length === 0) {
+      return <Empty description="No data available" />;
+    }
+
+    return <Column {...config} />;
+  };
 
   return (
     <Card>
       <div className="flex justify-between items-center mb-4">
-        <Text className="font-bold text-xl">Jobstreet Job Sub Category</Text>
+        <Text className="font-bold text-xl">Job Sub Category</Text>
         <div className="space-x-2">
           <Select
             value={selectedMonth}
             onChange={setSelectedMonth}
-            style={{width: 130, height:48}}
+            style={{ width: 130, height: 48 }}
           >
-           <Select.Option value={1}>January</Select.Option>
-            <Select.Option value={2}>February</Select.Option>
-            <Select.Option value={3}>March</Select.Option>
-            <Select.Option value={4}>April</Select.Option>
-            <Select.Option value={5}>May</Select.Option>
-            <Select.Option value={6}>June</Select.Option>
-            <Select.Option value={7}>July</Select.Option>
-            <Select.Option value={8}>August</Select.Option>
-            <Select.Option value={9}>September</Select.Option>
-            <Select.Option value={10}>October</Select.Option>
-            <Select.Option value={11}>November</Select.Option>
-            <Select.Option value={12}>December</Select.Option>
+            {monthOptions.map((month) => (
+              <Select.Option key={month.value} value={month.value}>
+                {month.label}
+              </Select.Option>
+            ))}
           </Select>
           <Select
-            style={{
-              width: 120,
-              height: 48,
-            }}
-          />
+            value={selectedYear}
+            onChange={setSelectedYear}
+            style={{ width: 100, height: 48 }}
+          >
+            {generateYearOptions()}
+          </Select>
         </div>
       </div>
-      <Column {...config} />
+      {renderChart()}
     </Card>
   );
 };
