@@ -61,12 +61,7 @@ const DataCollection = () => {
       title: "Job Category",
       dataIndex: "job_category",
       key: "job_category",
-    },
-    // {
-    //   title: "Job Category Normalization",
-    //   dataIndex: "job_category_normalization",
-    //   key: "job_category_normalization",
-    // },
+    },   
     {
       title: "Job Work Type",
       dataIndex: "job_work_type",
@@ -85,7 +80,7 @@ const DataCollection = () => {
         text ? (
           text
         ) : (
-          <span className="italic text-gray-400">Salary not displayed</span>
+          <span className="italic text-gray-400">Salary Undisclosed</span>
         ),
     },
     {
