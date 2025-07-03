@@ -65,7 +65,7 @@ const JobDetailDataTable = ({ sessionId }) => {
         text ? (
           text
         ) : (
-          <span className="italic text-gray-400">Salary not displayed</span>
+          <span className="italic text-gray-400">Salary Undisclosed</span>
         ),
     },
     {
