@@ -1,11 +1,11 @@
 import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
-import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from "src/prisma/prisma.service";
+import { createObjectCsvStringifier } from 'csv-writer';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { ScraperGateway } from "./scraper.gateway";
 import { Subscription } from 'rxjs';
 import { Response } from 'express';
 import { CronJob } from 'cron';
-import { createObjectCsvStringifier } from 'csv-writer';
 
 @Injectable()
 export class ExtractDataService {
@@ -23,6 +23,11 @@ export class ExtractDataService {
     private schedulerRegistry: SchedulerRegistry
   ) { this.setupSubscriptions(); this.initializeScheduledScrape(); }
 
+  private readonly pagesPerSource: Record<string, number> = {
+    jobstreet: 30,
+    glints: 30
+  }
+
   private async saveJobData(sessionId: string, source: string, jobs: any[]) {
     if (!jobs || jobs.length === 0) {
       this.logger.warn("Tidak ada pekerjaan untuk disimpan");
@@ -38,7 +43,6 @@ export class ExtractDataService {
         job_sub_category: job["Sub Category"] || "",
         job_posted: job["Job Posted"] ? new Date(job["Job Posted"]) : new Date(),
         job_work_type: job["Work Type"] || "",
-        job_category_normalization: job["Normalized Category"] || "",
         job_salary: job.Salary || "",
         job_source: source as any,
         job_location: job.Location || "",
@@ -71,6 +75,14 @@ export class ExtractDataService {
         if (activeSources.length > 0) {
           for (const source of activeSources) {
             const sessionId = this.activeSessions[source];
+            const last = this.scraperGateway['lastHeartbeatTimestamps'][source] || 0;
+            const now = Date.now();
+            const elapsed = now - last;
+
+            if (elapsed < 120000) {
+              this.logger.warn(`⚠️ Heartbeat dari ${source} masih baru (${Math.floor(elapsed / 1000)} detik lalu), SKIP update failed.`);
+              continue;
+            }
 
             await this.prisma.scrape_session.update({
               where: { scrape_session_id: sessionId },
@@ -192,12 +204,12 @@ export class ExtractDataService {
           source: source as any,
         }
       });
-
+      const totalPages = this.pagesPerSource[source] || 10;
       this.logger.log(`Membuat sesi scraping: ${scrapeSession.scrape_session_id}`);
       this.activeSessions[source] = scrapeSession.scrape_session_id;
       this.scraperGateway.requestScraping({
         action: "scrape",
-        total_pages: 2,
+        total_pages: totalPages,
         source,
         sessionId: scrapeSession.scrape_session_id
       });
@@ -287,12 +299,15 @@ export class ExtractDataService {
       const schedule = await this.prisma.scrape_session.findUnique({
         where: { scrape_session_id: id }
       });
+
       if (!schedule) {
         throw new NotFoundException(`Jadwal scraping dengan ID ${id} tidak ditemukan`);
       }
+
       if (schedule.status !== 'scheduled') {
         throw new ConflictException('Hanya jadwal yang belum dijalankan yang dapat dihapus');
       }
+
       await this.prisma.scrape_session.delete({
         where: { scrape_session_id: id }
       });
@@ -300,7 +315,9 @@ export class ExtractDataService {
       try {
         this.schedulerRegistry.deleteCronJob(id);
       } catch (error) {
+        console.log(error)
       }
+
       return {
         status: 'success',
         message: 'Jadwal scraping berhasil dihapus',
@@ -461,7 +478,7 @@ export class ExtractDataService {
       const csvRows = csvStringifier.stringifyRecords(jobsData);
       const csvContent = csvHeader + csvRows;
 
-      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', `attachment; filename=jobs_${sessionId}.csv`);
       return res.send(csvContent);
     } catch (error) {
@@ -483,8 +500,7 @@ export class ExtractDataService {
       const totalPages = Math.ceil(totalData / pageSize);
       const jobsData = await this.prisma.job_trend_information.findMany({
         where: { scrape_session_id: sessionId },
-        skip,
-        take,
+        skip, take,
         orderBy: { created_at: 'desc' }
       });
 
