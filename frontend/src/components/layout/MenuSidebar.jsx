@@ -41,6 +41,13 @@ const MenuSidebar = [
         "/data-collection",
         null
       ),
+      getItem(
+        'Scrape Config',
+        <Link to={`/scrape-config`}>Scrape Config</Link>,
+        "scrape-config",
+        "/scrape-config",
+        null
+      )
     ]
   ),
 ];
