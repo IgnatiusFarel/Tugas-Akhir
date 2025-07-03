@@ -5,14 +5,16 @@ import { PrismaService } from "src/prisma/prisma.service";
 export class DataVisualizationService {
     constructor(
         private prisma: PrismaService
-    ) { }
+    ) {}
 
     async getJobCategoriesChart(params: {
         source: string;
         year?: number;
         month?: number;
+        limit?: number;
     }) {
-        const { source, year, month } = params;
+        const { source, year, month, limit } = params;
+        const take = limit ?? 5;
 
         try {
             let dateFilter = {};
@@ -37,7 +39,6 @@ export class DataVisualizationService {
                         lte: endDate
                     }
                 };
-
             }
 
             const jobCategoryChartData = await (this.prisma.job_trend_information.groupBy as any)({
@@ -54,7 +55,7 @@ export class DataVisualizationService {
                         job_trend_information_id: 'desc'
                     }
                 },
-                take: 10
+                take, 
             });
 
             const chartData = {
@@ -79,9 +80,12 @@ export class DataVisualizationService {
     async getJobSubCategoriesChart(params: {
         source: string;
         year?: number;
-        month?: number
+        month?: number;
+        limit?: number;
     }) {
-        const { source, year, month } = params;
+        const { source, year, month, limit } = params;
+        const take = limit ?? 5;
+
         try {
             let dateFilter = {};
 
@@ -121,7 +125,7 @@ export class DataVisualizationService {
                         job_trend_information_id: 'desc'
                     }
                 },
-                take: 10
+                take, 
             })
 
             const chartData = {
@@ -213,9 +217,12 @@ export class DataVisualizationService {
     async getJobSalariesChart(params: {
         source: string;
         year?: number;
-        month?: number
+        month?: number;
+        limit?: number;
     }) {
-        const { source, year, month } = params;
+       const { source, year, month, limit } = params;
+        const take = limit ?? 5;
+
         try {
             let dateFilter = {};
 
@@ -258,7 +265,7 @@ export class DataVisualizationService {
                         job_trend_information_id: 'desc'
                     }
                 },
-                take: 10
+                 take, 
             })
 
             const chartData = {
@@ -283,9 +290,12 @@ export class DataVisualizationService {
     async getJobLocationsChart(params: {
         source: string;
         year?: number;
-        month?: number
+        month?: number;
+        limit?: number; 
     }) {
-        const { source, year, month } = params;
+        const { source, year, month, limit } = params;
+        const take = limit ?? 5;
+
         try {
             let dateFilter = {};
 
@@ -325,7 +335,7 @@ export class DataVisualizationService {
                         job_trend_information_id: 'desc'
                     }
                 },
-                take: 10
+                take
             })
 
             const chartData = {
