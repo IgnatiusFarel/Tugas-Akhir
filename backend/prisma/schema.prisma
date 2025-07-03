@@ -40,16 +40,28 @@ model job_trend_information {
   scrape_session            scrape_session        @relation(fields: [scrape_session_id], references: [scrape_session_id])
   created_at                DateTime              @default(now())
 
-  job_title                     String
-  job_category                  String
-  job_sub_category              String
-  job_posted                    DateTime
-  job_work_type                 String
-  job_category_normalization    String
-  job_salary                    String?
-  job_source                    scrape_source
-  job_location                  String
-  job_detail_url                String @db.VarChar(1000)
+  job_title                 String
+  job_category              String
+  job_sub_category          String
+  job_posted                DateTime
+  job_work_type             String  
+  job_salary                String?
+  job_min_salary            String?
+  job_max_salary            String?
+  job_source                scrape_source
+  job_location              String
+  job_detail_url            String @db.VarChar(1000)
 }
 
-  //company bisa dipertimbangkan
+model scrape_rule {
+  scrape_rule_id            String @id @default(uuid())
+  platform                  scrape_source
+  field_name                String 
+  method                    String 
+  selector_value            String 
+  attribute                 String? 
+  created_at                DateTime @default(now())
+  updated_at                DateTime @updatedAt
+
+  @@unique([platform, field_name])
+}
