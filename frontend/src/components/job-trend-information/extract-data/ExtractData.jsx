@@ -5,11 +5,30 @@ import Pagination from "../../Pagination";
 import { useState, useEffect } from "react";
 import ScheduleScrape from "./ScheduleScrape";
 import JobDetailDataModal from "./JobDetailDataModal";
-import {ExportOutlined, SyncOutlined } from "@ant-design/icons";
-import { Button, Card, Layout, message, Popconfirm, Progress, Table, Typography } from "antd";
-import { CalendarDots, ClockClockwise, CaretRight, CaretDown, FileCsv, FileJs, Link, Scan, Trash } from "@phosphor-icons/react";
+import { ExportOutlined, SyncOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Layout,
+  message,
+  Popconfirm,
+  Progress,
+  Table,
+  Typography,
+} from "antd";
+import {
+  CalendarDots,
+  ClockClockwise,
+  CaretRight,
+  CaretDown,
+  FileCsv,
+  FileJs,
+  Link,
+  Scan,
+  Trash,
+} from "@phosphor-icons/react";
 import glintsLogo from "../../../assets/Glints.png";
-import  jobstreetLogo  from "../../../assets/Jobstreet.jpg";
+import jobstreetLogo from "../../../assets/Jobstreet.jpg";
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -24,7 +43,8 @@ const ExtractData = () => {
   const [jobStreetLoading, setJobStreetLoading] = useState(false);
   const [glintsLoading, setGlintsLoading] = useState(false);
   const [jobStreetProgress, setJobStreetProgress] = useState(0);
-  const [jobStreetScheduleLoading, setJobStreetScheduleLoading] = useState(false);
+  const [jobStreetScheduleLoading, setJobStreetScheduleLoading] =
+    useState(false);
   const [glintsScheduleLoading, setGlintsScheduleLoading] = useState(false);
   const [jobStreetHasScheduled, setJobStreetHasScheduled] = useState(false);
   const [glintsHasScheduled, setGlintsHasScheduled] = useState(false);
@@ -57,22 +77,22 @@ const ExtractData = () => {
       month: "long",
       day: "numeric",
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     }).format(date);
   };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case 'running':
-        return 'text-blue-500';
-      case 'scheduled':
-        return 'text-orange-500';
-      case 'success':
-        return 'text-green-500';
-      case 'failed':
-        return 'text-red-500';
+      case "running":
+        return "text-blue-500";
+      case "scheduled":
+        return "text-orange-500";
+      case "success":
+        return "text-green-500";
+      case "failed":
+        return "text-red-500";
       default:
-        return 'text-gray-500';
+        return "text-gray-500";
     }
   };
 
@@ -127,21 +147,24 @@ const ExtractData = () => {
       key: "status",
       render: (status) => (
         <span className={`${getStatusColor(status)} font-medium capitalize`}>
-        {status}
-      </span>
-      )
+          {status}
+        </span>
+      ),
     },
     {
       title: "Percentage",
       dataIndex: "percentage",
       key: "percentage",
       render: (percentage, record) => {
-        const strokeColor = 
-          record.status === 'failed' ? '#ff4d4f' :
-          record.status === 'running' ? '#1890ff' :
-          record.status === 'scheduled' ? '#faad14' :
-          '#52c41a';
-        
+        const strokeColor =
+          record.status === "failed"
+            ? "#ff4d4f"
+            : record.status === "running"
+            ? "#1890ff"
+            : record.status === "scheduled"
+            ? "#faad14"
+            : "#52c41a";
+
         return (
           <Progress
             percent={percentage}
@@ -151,7 +174,7 @@ const ExtractData = () => {
           />
         );
       },
-    }
+    },
   ];
 
   const fetchScrapeSessions = async () => {
@@ -160,12 +183,12 @@ const ExtractData = () => {
       const response = await Api.get("/extract-data/scrape-sessions", {
         params: { page, pageSize },
       });
-      
+
       const sessions = response.data || [];
       const tableData = sessions.map((session, index) => ({
         key: session.scrape_session_id,
         no: index + 1,
-        sourceType: session.source, 
+        sourceType: session.source,
         source:
           session.source === "jobstreet"
             ? "https://id.jobstreet.com/jobs?sortmode=ListedDate"
@@ -175,7 +198,7 @@ const ExtractData = () => {
         time: calculateDuration(session.started_at, session.finished_at),
         status: session.status,
         percentage: session.percentage,
-        finished_at: session.finished_at, 
+        finished_at: session.finished_at,
         scheduled_run: session.scheduled_run,
       }));
 
@@ -203,11 +226,10 @@ const ExtractData = () => {
       await new Promise((resolve) => setTimeout(resolve, 3000));
       const response = await Api.get("/extract-data/server-status");
       console.log("Server status response:", response);
-      let isConnected = false;      
+      let isConnected = false;
       if (response && typeof response.isConnected === "boolean") {
         isConnected = response.isConnected;
-      }      
-      else if (
+      } else if (
         response &&
         response.data &&
         typeof response.data.isConnected === "boolean"
@@ -231,7 +253,7 @@ const ExtractData = () => {
         content: `Server aktif, proses scraping untuk ${source} akan segera dimulai.`,
         key: "serverStatus",
         duration: 3,
-      });      
+      });
       message.loading({
         content: `Menginisialisasi scraping ${source}...`,
         key: "scrapingInit",
@@ -257,12 +279,15 @@ const ExtractData = () => {
 
   const handleDownloadJSON = async (sessionId) => {
     setLoading(true);
-    try {    
-      const response = await Api.get(`/extract-data/${sessionId}/download/json`,{ responseType: "blob" });
+    try {
+      const response = await Api.get(
+        `/extract-data/${sessionId}/download/json`,
+        { responseType: "blob" }
+      );
       const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `jobs_${sessionId}.json`);    
+      link.setAttribute("download", `jobs_${sessionId}.json`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -279,11 +304,14 @@ const ExtractData = () => {
   const handleDownloadCSV = async (sessionId) => {
     setLoading(true);
     try {
-      const response = await Api.get(`/extract-data/${sessionId}/download/csv`,{responseType: "blob"});      
-      const url = window.URL.createObjectURL(new Blob([response]));      
+      const response = await Api.get(
+        `/extract-data/${sessionId}/download/csv`,
+        { responseType: "blob" }
+      );
+      const url = window.URL.createObjectURL(new Blob([response]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `jobs_${sessionId}.csv`);      
+      link.setAttribute("download", `jobs_${sessionId}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -301,7 +329,7 @@ const ExtractData = () => {
     try {
       setLoading(true);
       await Api.delete(`extract-data/run-schedule/${id}`);
-      message.success(`Scheduled scraping for ${source} has been cancelled`);      
+      message.success(`Scheduled scraping for ${source} has been cancelled`);
       if (source === "jobstreet") {
         setJobStreetHasScheduled(false);
         setJobStreetNextSchedule("-");
@@ -332,13 +360,14 @@ const ExtractData = () => {
       <div className="flex flex-col">
         <Text className="font-bold text-black">
           <a href={record.source} target="_blank">
-            {record.source} <ExportOutlined  />
+            {record.source} <ExportOutlined />
           </a>
         </Text>
         <Text type="secondary" className="text-sm">
-          scrape • id: {record.scrape_id} • {record.time} •    <span className={`${getStatusColor(record.status)}`}>
-          {record.status}
-        </span>
+          scrape • id: {record.scrape_id} • {record.time} •{" "}
+          <span className={`${getStatusColor(record.status)}`}>
+            {record.status}
+          </span>
         </Text>
         <div className="flex justify-end gap-2">
           <JobDetailDataModal sessionId={record.scrape_id} />
@@ -346,7 +375,9 @@ const ExtractData = () => {
             className="!bg-green-500 hover:!bg-green-600 !text-white"
             onClick={() => handleDownloadCSV(record.scrape_id)}
           >
-            <FileCsv />CSV</Button>
+            <FileCsv />
+            CSV
+          </Button>
           <Button
             className="!bg-orange-500 hover:!bg-orange-600 !text-white"
             onClick={() => handleDownloadJSON(record.scrape_id)}
@@ -366,31 +397,31 @@ const ExtractData = () => {
         .sort((a, b) => new Date(b.finished_at) - new Date(a.finished_at))[0];
       const latestGlints = data
         .filter((session) => session.sourceType === "glints")
-        .sort((a, b) => new Date(b.finished_at) - new Date(a.finished_at))[0];      
+        .sort((a, b) => new Date(b.finished_at) - new Date(a.finished_at))[0];
       setJobStreetLastRun(
         latestJobStreet ? formatDate(latestJobStreet.finished_at) : "-"
       );
       setGlintsLastRun(
         latestGlints ? formatDate(latestGlints.finished_at) : "-"
-      );      
+      );
       const nextJobStreet = data
         .filter(
           (session) =>
             session.sourceType === "jobstreet" &&
             session.scheduled_run &&
             new Date(session.scheduled_run) > new Date() &&
-            session.status === "scheduled" 
+            session.status === "scheduled"
         )
         .sort(
           (a, b) => new Date(a.scheduled_run) - new Date(b.scheduled_run)
-        )[0];      
+        )[0];
       const nextGlints = data
         .filter(
           (session) =>
             session.sourceType === "glints" &&
             session.scheduled_run &&
             new Date(session.scheduled_run) > new Date() &&
-            session.status === "scheduled" 
+            session.status === "scheduled"
         )
         .sort(
           (a, b) => new Date(a.scheduled_run) - new Date(b.scheduled_run)
@@ -401,7 +432,7 @@ const ExtractData = () => {
       );
       setGlintsNextSchedule(
         nextGlints ? formatDate(nextGlints.scheduled_run) : "-"
-      );      
+      );
       setJobStreetScheduleId(nextJobStreet ? nextJobStreet.key : null);
       setGlintsScheduleId(nextGlints ? nextGlints.key : null);
 
@@ -415,17 +446,38 @@ const ExtractData = () => {
     socket.on("connect", () => {
       console.log("Connected to scraping server");
       setServerConnected(true);
-    });
-    socket.on("python_server_disconnected", () => {
-      console.log("Python server disconnected");
-      setServerConnected(false);      
-      setJobStreetLoading(false);
-      setGlintsLoading(false);
-      message.error(
-        "Python scraper server disconnected. Please check the server status."
-      );
       fetchScrapeSessions();
     });
+    socket.on("python_server_disconnected", () => {
+      setServerConnected(false);
+      message.warning(
+        "Python scraper server disconnected. Waiting to reconnect..."
+      );
+
+      const timeoutId = setTimeout(() => {
+        // Gunakan closure biar cek status terkini
+        if (!socket.connected) {
+          setJobStreetLoading(false);
+          setGlintsLoading(false);
+          message.error("Scraping dianggap gagal karena tidak reconnect.");
+        }
+      }, 120000);
+      socket.once("connect", () => {
+        clearTimeout(timeoutId);
+        setServerConnected(true);
+      });
+    });
+
+    // socket.on("python_server_disconnected", () => {
+    //   console.log("Python server disconnected");
+    //   setServerConnected(false);
+    //   setJobStreetLoading(false);
+    //   setGlintsLoading(false);
+    //   message.error(
+    //     "Python scraper server disconnected. Please check the server status."
+    //   );
+    //   fetchScrapeSessions();
+    // });
 
     socket.on("loading", (message) => {
       console.log("Progress:", message);
@@ -466,7 +518,7 @@ const ExtractData = () => {
 
     const refreshInterval = setInterval(() => {
       fetchScrapeSessions();
-    }, 3000);
+    }, 5000);
     return () => {
       socket.disconnect();
       clearInterval(refreshInterval);
@@ -484,10 +536,10 @@ const ExtractData = () => {
 
   return (
     <Content className="p-6 mt-3">
-      <main className="space-y-6">
+      <main className="space-y-4">
         <div className="flex items-center justify-end">
           <div
-            className={`w-3 h-3 rounded-full mr-2 ${
+            className={`w-2 h-2 rounded-full mr-2 ${
               serverConnected ? "bg-green-500" : "bg-red-500"
             }`}
           ></div>
@@ -580,7 +632,7 @@ const ExtractData = () => {
                     "jobstreet",
                     setJobStreetScheduleLoading
                   )
-                }                
+                }
                 loading={jobStreetScheduleLoading}
                 disabled={jobStreetHasScheduled || jobStreetScheduleLoading}
               >
