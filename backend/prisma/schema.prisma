@@ -44,12 +44,12 @@ model job_trend_information {
   job_category              String
   job_sub_category          String
   job_posted                DateTime
-  job_work_type             String  
-  job_salary                String?
+  job_work_type             String    
   job_min_salary            String?
   job_max_salary            String?
-  job_source                scrape_source
-  job_location              String
+  job_source                scrape_source  
+  job_city                  String?
+  job_province              String?
   job_detail_url            String @db.VarChar(1000)
 }
 
