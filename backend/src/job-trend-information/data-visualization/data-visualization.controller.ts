@@ -70,8 +70,8 @@ export class DataVisualizationController {
         });
     }
 
-    @Get('job-locations')
-    async getJobLocationsChart(
+    @Get('job-cities')
+    async getJobCitiesChart(
         @Query('source') source: string,
         @Query('year', new DefaultValuePipe(undefined), ParseIntPipe) year?: number,
         @Query('month', new DefaultValuePipe(undefined), ParseIntPipe) month?: number,
@@ -80,7 +80,22 @@ export class DataVisualizationController {
         if (!source) {
             return { status: 'error', message: 'Source required', data: null };
         }
-        return await this.dataVisualizationService.getJobLocationsChart({
+        return await this.dataVisualizationService.getJobCitiesChart({
+            source, year, month, limit,
+        });
+    }
+
+    @Get('job-provinces')
+    async getJobProvincesChart(
+        @Query('source') source: string,
+        @Query('year', new DefaultValuePipe(undefined), ParseIntPipe) year?: number,
+        @Query('month', new DefaultValuePipe(undefined), ParseIntPipe) month?: number,
+        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 5,
+    ) {
+        if (!source) {
+            return { status: 'error', message: 'Source required', data: null };
+        }
+        return await this.dataVisualizationService.getJobProvincesChart({
             source, year, month, limit,
         });
     }
