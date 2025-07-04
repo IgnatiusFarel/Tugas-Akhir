@@ -24,8 +24,8 @@ export class ExtractDataService {
   ) { this.setupSubscriptions(); this.initializeScheduledScrape(); }
 
   private readonly pagesPerSource: Record<string, number> = {
-    jobstreet: 30,
-    glints: 30
+    jobstreet: 1,
+    glints: 1
   }
 
   private async saveJobData(sessionId: string, source: string, jobs: any[]) {
@@ -43,9 +43,13 @@ export class ExtractDataService {
         job_sub_category: job["Sub Category"] || "",
         job_posted: job["Job Posted"] ? new Date(job["Job Posted"]) : new Date(),
         job_work_type: job["Work Type"] || "",
-        job_salary: job.Salary || "",
+        // job_salary: job.Salary || "",
+        job_min_salary: job["Min Salary"] || "",
+        job_max_salary: job["Max Salary"] || "",
         job_source: source as any,
-        job_location: job.Location || "",
+        // job_location: job.Location || "",
+        job_city: job["City"] || "", 
+        job_province: job["Province"] || "",
         job_detail_url: job["URL Detail"] || ""
       }));
 
@@ -467,7 +471,8 @@ export class ExtractDataService {
           { id: 'job_sub_category', title: 'Sub Category' },
           { id: 'job_category', title: 'Category' },
           { id: 'job_work_type', title: 'Work Type' },
-          { id: 'job_salary', title: 'Salary' },
+          { id: 'job_min_salary', title: 'Min Salary' },
+          { id: 'job_max_salary', title: 'Max Salary' },
           { id: 'job_source', title: 'Source' },
           { id: 'job_location', title: 'Location' },
           { id: 'job_detail_url', title: 'Detail URL' },
