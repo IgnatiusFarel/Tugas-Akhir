@@ -53,29 +53,45 @@ const DataCollection = () => {
       key: "job_title",
     },
     {
-      title: "Job Sub Category",
-      dataIndex: "job_sub_category",
-      key: "job_sub_category",
-    },
-    {
       title: "Job Category",
       dataIndex: "job_category",
       key: "job_category",
     },   
     {
+      title: "Job Sub Category",
+      dataIndex: "job_sub_category",
+      key: "job_sub_category",
+    },    
+    {
       title: "Job Work Type",
       dataIndex: "job_work_type",
       key: "job_work_type",
+    },    
+    {
+      title: "Job City",
+      dataIndex: "job_city",
+      key: "job_city",
     },
     {
-      title: "Job Location",
-      dataIndex: "job_location",
-      key: "job_location",
-    },
+      title: "Job Province",
+      dataIndex: "job_province",
+      key: "job_province",
+    },    
     {
-      title: "Job Salary",
-      dataIndex: "job_salary",
+      title: "Job Min Salary",
+      dataIndex: "job_min_salary",
       key: "job_salary",
+      render: (text) =>
+        text ? (
+          text
+        ) : (
+          <span className="italic text-gray-400">Salary Undisclosed</span>
+        ),
+    },
+    {
+      title: "Job Max Salary",
+      dataIndex: "job_max_salary",
+      key: "job_max_salary",
       render: (text) =>
         text ? (
           text
