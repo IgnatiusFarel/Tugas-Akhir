@@ -4,8 +4,10 @@ import JobstreetJobWorkTypeCard from "./jobstreet/JobstreetJobWorkTypeCard.jsx";
 import GlintsJobWorkTypeCard from "./glints/GlintsJobWorkTypeCard.jsx";
 import JobstreetJobSubCategoryCard from "./jobstreet/JobstreetJobSubCategoryCard.jsx";
 import GlintsJobSubCategoryCard from "./glints/GlintsJobSubCategoryCard.jsx";
-import JobstreetJobLocationCard from "./jobstreet/JobstreetJobLocationCard.jsx";
-import GlintsJobLocationCard from "./glints/GlintsJobLocationCard.jsx";
+import JobstreetJobCityCard from "./jobstreet/JobstreetJobCityCard.jsx";
+import JobstreetJobProvinceCard from "./jobstreet/JobstreetJobProvinceCard.jsx";
+import GlintsJobCityCard from "./glints/GlintsJobCityCard.jsx";
+import GlintsJobProvinceCard from "./glints/GlintsJobProvinceCard.jsx";
 import JobstreetJobSalaryCard from "./jobstreet/JobstreetJobSalaryCard.jsx";
 import GlintsJobSalaryCard from "./glints/GlintsJobSalaryCard.jsx";
 import jobstreetsLogo from "../../../assets/Jobstreets.png";
@@ -20,7 +22,8 @@ const DataVisualization = () => {
         </div>
         <JobstreetJobCategoryCard />
         <JobstreetJobSubCategoryCard />
-        <JobstreetJobLocationCard />
+        <JobstreetJobCityCard />
+        <JobstreetJobProvinceCard />
         <JobstreetJobSalaryCard />
         <JobstreetJobWorkTypeCard />
       
@@ -29,7 +32,8 @@ const DataVisualization = () => {
         </div>
         <GlintsJobCategoryCard />
         <GlintsJobSubCategoryCard />
-        <GlintsJobLocationCard />
+        <GlintsJobCityCard />
+        <GlintsJobProvinceCard />
         <GlintsJobSalaryCard />
         <GlintsJobWorkTypeCard />
       </div>
