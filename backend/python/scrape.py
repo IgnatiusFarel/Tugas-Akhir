@@ -4,6 +4,7 @@ import socketio
 import requests
 import eventlet
 import nest_asyncio
+from typing import Tuple
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from datetime import datetime, timedelta
@@ -68,30 +69,60 @@ class Scrapper:
     def extract_text(self, element, default: str = "") -> str:        
         return element.get_text(strip=True) if element else default
 
-    def normalize_salary(self, salary_text: str) -> str:
-        if not salary_text:  
-            return salary_text
-            
-        parts = re.findall(r'[\d\.]+', salary_text)
-        if not parts: 
-            return salary_text
-        
-        jt_values = []
-        for part in parts: 
-            raw = int(part.replace('.',''))
-            juta = raw / 1_000_000
+    def normalize_salary(self, salary_text: str) -> Tuple[str, str]:
+        if not salary_text:
+            return "", ""
 
-            s = str(int(juta)) if juta.is_integer() else f"{juta:.1f}"
-            jt_values.append(f"{s} jt")
+        cleaned = (
+            salary_text.replace("\xa0", " ").replace("Rp", "").replace("rp", "").strip())
+    
+        parts = re.findall(r'[\d\.,]+', cleaned)
+        if not parts:
+            return "", ""
+
+        salaries = []
+        for part in parts:
+            part = part.replace(",", ".")
         
-        sep = " – " if "–" in salary_text else " - "
-        return sep.join(jt_values)
+            if part.count(".") > 1:                   
+                raw = float(part.replace(".", ""))    
+            else:
+                raw = float(part)                     
+                
+            if raw >= 100_000:
+                juta = raw / 1_000_000                  
+            else:
+                juta = raw                              
+
+            jt_str = (str(int(juta)) if juta.is_integer()
+                  else f"{juta:.1f}").rstrip("0").rstrip(".")
+            salaries.append(f"{jt_str} jt")
+    
+        if len(salaries) == 1:
+            return salaries[0], salaries[0]
+        elif len(salaries) >= 2:
+            return salaries[0], salaries[1]
+        return "", ""        
     
     def normalize_work_type(self, work_type_text: str) -> str:
         if not work_type_text: 
-            return work_type_text
+            return ""
         
         return work_type_text.replace("_", " ").title()
+    
+    def normalize_location(self, location_text: str) -> tuple[str, str]:
+        if not location_text: 
+            return "", ""
+
+        cleaned = location_text.replace(" | ", ",").strip()
+        parts = [p.strip() for p in cleaned.split(",") if p.strip()]
+
+        if len(parts) >= 2:
+            return parts[-2], parts[-1]
+        elif len(parts) == 1:
+            return parts[0], ""
+    
+        return "", ""
         
     def get_work_type(self, job_data, url_detail: str, session: requests.Session) -> str:        
         rule = self.scrape_rules.get("work_type")
@@ -121,6 +152,21 @@ class Scrapper:
             except Exception as e:
                 print(f"Error fetching work_type from detail page: {e}")
         return None
+    
+    def convert_field_to_output(self, field):
+        return {
+            "job_id": "Job ID",
+            "title": "Title",
+            "sub_category": "Sub Category",
+            "category": "Category",
+            "city": "City",
+            "province": "Province", 
+            "min_salary": "Min Salary",
+            "max_salary": "Max Salary",
+            "work_type": "Work Type",
+            "job_posted": "Job Posted", 
+            "url_detail": "URL Detail",                     
+        }.get(field, field)
     
     def apply_scrape_rule(self, job_data, field_name: str):
         rule = self.scrape_rules.get(field_name)
@@ -155,20 +201,7 @@ class Scrapper:
             return " | ".join([self.extract_text(e) for e in elements])
         
         return None
-    
-    def convert_field_to_output(self, field):
-        return {
-            "job_id": "Job ID",
-            "title": "Title",
-            "sub_category": "Sub Category",
-            "category": "Category",
-            "location": "Location",
-            "salary": "Salary",
-            "work_type": "Work Type",
-            "job_posted": "Job Posted", 
-            "url_detail": "URL Detail",                     
-        }.get(field, field)
-    
+            
     def parse_jobstreet_job_card(self, job_data, session: requests.Session) -> dict:        
         job = {}
         for field in self.scrape_rules:             
@@ -178,8 +211,10 @@ class Scrapper:
                 job["URL Detail"] = url_detail
             else: 
                 val = self.apply_scrape_rule(job_data, field)
-                if field == "salary" and val:
-                    val = self.normalize_salary(val)
+                if field == "salary" and val:                    
+                    min_salary, max_salary = self.normalize_salary(val)
+                    job["Min Salary"] = min_salary
+                    job["Max Salary"] = max_salary
                 elif field == "job_posted" and val: 
                     val = self.get_posted_date(val)
                 elif field == "category":
@@ -187,6 +222,12 @@ class Scrapper:
                     cleaned = re.sub(r"[()]", "", raw).strip()
                     job["Category"] = cleaned                                        
                     continue
+                elif field == "location" and val: 
+                    city, province = self.normalize_location(val)
+                    job["City"] = city 
+                    job["Province"] = province
+                    continue
+
                 job[self.convert_field_to_output(field)] = val 
         
         return job if job.get("Job ID") else None      
@@ -368,15 +409,20 @@ class Scrapper:
                 elif field == "work_type":
                     val = self.normalize_work_type(val)
 
+                elif field == "salary": 
+                    min_salary, max_salary = self.normalize_salary(val)                    
+                    job["Min Salary"] = min_salary
+                    job["Max Salary"] = max_salary
+                    continue
+
                 elif field == "location": 
-                    if isinstance(val, str):
-                        parts = [p.strip() for p in val.split(" | ")]
-                        if len(parts) >=2: 
-                            val = parts[1]
-                        else: 
-                            val = val
+                    city, province = self.normalize_location(val)
+                    job["City"] = city
+                    job["Province"] = province
+                    continue
             
                 job[self.convert_field_to_output(field)] = val
+                
             except Exception as e: 
                 print(f"[ERROR] Field `{field}` gagal diproses: {e}")
                 continue

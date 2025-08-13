@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { message, Table } from "antd";
 import Pagination from "../../Pagination";
 import { useEffect, useState } from "react";
 import Api from "../../../services/Api";
@@ -124,6 +124,8 @@ const JobDetailDataTable = ({ sessionId }) => {
       .catch((error) => {
         console.error("Error fetching job details:", error);
         setLoading(false);
+        message.destroy();
+        message.error("Oops! Something went wrong while loading job detail data table. Please try again later.");
       });
   };
 

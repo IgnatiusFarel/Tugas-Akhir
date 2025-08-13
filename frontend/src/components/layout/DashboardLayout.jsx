@@ -56,7 +56,7 @@ const DashboardLayout = ({ children }) => {
           borderRight: "1px solid #E9E9E9",
           height: "100%",
           overflow: "auto",
-          position: "sticky",
+	        position: "sticky",
           top: 0,
         }}
       >
@@ -75,7 +75,6 @@ const DashboardLayout = ({ children }) => {
             defaultSelectedKeys={[activeMenuSidebar?.key]}
             selectedKeys={[activeMenuSidebar?.key]}
             items={menuSidebar}
-
           />
         </div>
       </Sider>
@@ -131,12 +130,12 @@ const DashboardLayout = ({ children }) => {
               >
                 <div className="flex items-center justify-between w-full">
                   <Avatar
-                    src="https://img.freepik.com/free-photo/3d-portrait-people_23-2150793852.jpg?semt=ais_hybrid"
+                    src="https://api.dicebear.com/7.x/miniavs/svg?seed=1"
                     size={36}
                     className="mr-2"
                   />
                   <div className="flex flex-col items-start mr-2">
-                    <Text style={{fontSize: "14px"}}> Tugas Akhir</Text>
+                    <Text style={{fontSize: "14px"}}> Ignatius Farel</Text>
                     <Text style={{fontSize: "12px"}}> Superadmin </Text>
                   </div>
                   <ExpandAltOutlined className="size-5" />

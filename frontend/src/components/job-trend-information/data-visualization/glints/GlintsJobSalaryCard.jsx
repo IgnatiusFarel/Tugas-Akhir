@@ -72,7 +72,8 @@ const GlintsJobSalaryCard = () => {
       setChartData(jobSalaryData);
     } catch (error) {
       console.error("Error fetching job salary data:", error);
-      message.error("Failed to load job salary data");
+      message.destroy();
+      message.error("Oops! Something went wrong while loading glints job salaries. Please try again later.");
       setChartData([]);
     } finally {
       setLoading(false);
@@ -120,16 +121,15 @@ const GlintsJobSalaryCard = () => {
           >
             {generateYearOptions()}
           </Select>
-               <Select
-                                value={selectedLimit}
-                                onChange={setSelectedLimit}
-                                style={{ width: 85, height: 48 }}
-                              >
-                                 <Select.Option value={5}>Top 5</Select.Option>
-                      <Select.Option value={7}>Top 7</Select.Option>
-                      <Select.Option value={10}>Top 10</Select.Option>
-                      <Select.Option value={14}>Top 14</Select.Option>
-                              </Select>
+          <Select
+            value={selectedLimit}
+            onChange={setSelectedLimit}
+            style={{ width: 85, height: 48 }}
+          >
+            <Select.Option value={5}>Top 5</Select.Option>
+            <Select.Option value={10}>Top 10</Select.Option>
+            <Select.Option value={15}>Top 15</Select.Option>            
+          </Select>
         </div>
       </div>
       {renderChart()}

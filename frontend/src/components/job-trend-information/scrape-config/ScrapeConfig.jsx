@@ -6,6 +6,7 @@ import {
   Tabs,  
   Dropdown,
   Menu,
+  message,
 } from "antd";
 import { useEffect, useState } from "react";
 import Api from "../../../services/Api";
@@ -92,6 +93,8 @@ const ScrapeConfig = () => {
       setData(response.data);
     } catch (error) {
       console.error("Could not fetch scrape config data:", error);
+      message.destroy();
+      message.error("Oops! Something went wrong while loading fetch scrape config data. Please try again later.");
       setData([]);
     } finally {
       setLoading(false);

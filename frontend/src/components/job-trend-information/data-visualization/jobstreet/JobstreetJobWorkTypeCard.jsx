@@ -88,7 +88,8 @@ const JobstreetJobWorkTypeCard = () => {
       setChartData(jobWorkTypeData);
     } catch (error) {
       console.error("Error fetching job work type data:", error);
-      message.error("Failed to load job work type data");
+      message.destroy();
+      message.error("Oops! Something went wrong while loading jobstreet job work types. Please try again later.");
       setChartData([]);
     } finally {
       setLoading(false);

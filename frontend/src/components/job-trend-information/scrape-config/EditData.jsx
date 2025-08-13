@@ -1,15 +1,14 @@
-import { Button, Form, Input, message, Modal,} from "antd";
+import { Button, Form, Input, message, Modal } from "antd";
 import Api from "../../../services/Api";
 import { useEffect } from "react";
 
-const EditData = ({  open, setOpen, platform, onSave, selectedField  }) => {
+const EditData = ({ open, setOpen, platform, onSave, selectedField }) => {
   const [form] = Form.useForm();
 
   const handleCancel = () => {
     form.resetFields();
     setOpen(false);
   };
-
 
   const handleSave = async () => {
     try {
@@ -26,7 +25,8 @@ const EditData = ({  open, setOpen, platform, onSave, selectedField  }) => {
       handleCancel();
     } catch (error) {
       console.error(error);
-      message.error("Failed to update config");
+      message.destroy();
+      message.error("Oops! Failed to update scrape config data.");
     }
   };
 
@@ -42,9 +42,7 @@ const EditData = ({  open, setOpen, platform, onSave, selectedField  }) => {
       form.resetFields();
     }
   }, [selectedField, form]);
-;
-
-
+  
   return (
     <>
       <Modal
@@ -90,32 +88,28 @@ const EditData = ({  open, setOpen, platform, onSave, selectedField  }) => {
         </div>
         <Form form={form} layout="vertical" requiredMark={false}>
           <Form.Item name="field_name" label="Field Name">
-          <Input disabled />
-        </Form.Item>
+            <Input disabled />
+          </Form.Item>
 
-        <Form.Item
-          name="method"
-          label="Method"
-          rules={[{ required: true }]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item name="method" label="Method" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          name="selector_value"
-          label="Selector Value"
-          rules={[{ required: true }]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            name="selector_value"
+            label="Selector Value"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item
-          name="attribute"
-          label="Attribute"
-          rules={[{ required: true }]}
-        >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            name="attribute"
+            label="Attribute"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
 
           <div className="mt-7" style={{ textAlign: "center" }}>
             <Button

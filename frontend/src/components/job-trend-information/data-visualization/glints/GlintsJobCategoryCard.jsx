@@ -73,7 +73,10 @@ const GlintsJobCategoryCard = () => {
       setChartData(jobCategoryData);
     } catch (error) {
       console.error("Error fetching job category data:", error);
-      message.error("Failed to load job category data");
+      message.destroy();
+      message.error(
+        "Oops! Something went wrong while loading glints job categories. Please try again later."
+      );
       setChartData([]);
     } finally {
       setLoading(false);
@@ -87,7 +90,7 @@ const GlintsJobCategoryCard = () => {
   const renderChart = () => {
     if (loading) {
       return (
-         <div className="flex justify-center items-center h-72">
+        <div className="flex justify-center items-center h-72">
           <Spin size="large" />
         </div>
       );
@@ -127,14 +130,13 @@ const GlintsJobCategoryCard = () => {
             onChange={setSelectedLimit}
             style={{ width: 85, height: 48 }}
           >
-             <Select.Option value={5}>Top 5</Select.Option>
-  <Select.Option value={7}>Top 7</Select.Option>
-  <Select.Option value={10}>Top 10</Select.Option>
-  <Select.Option value={14}>Top 14</Select.Option>
+            <Select.Option value={5}>Top 5</Select.Option>
+            <Select.Option value={10}>Top 10</Select.Option>
+            <Select.Option value={15}>Top 15</Select.Option>            
           </Select>
         </div>
       </div>
-      {renderChart()}      
+      {renderChart()}
     </Card>
   );
 };

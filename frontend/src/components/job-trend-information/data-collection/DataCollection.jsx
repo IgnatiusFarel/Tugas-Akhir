@@ -1,4 +1,4 @@
-import { Input, Layout, Select, Table } from "antd";
+import { Input, Layout, message, Select, Table } from "antd";
 import Api from "../../../services/Api";
 import { useEffect, useState } from "react";
 import Pagination from "../../Pagination";
@@ -142,6 +142,8 @@ const DataCollection = () => {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+        message.destroy();
+        message.error("Oops! Something went wrong while loading data collection. Please try again later.");
         setLoading(false);
       });
   };

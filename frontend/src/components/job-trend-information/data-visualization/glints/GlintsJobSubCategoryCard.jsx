@@ -7,8 +7,8 @@ const { Text } = Typography;
 
 const GlintsJobSubCategoryCard = () => {
   const [loading, setLoading] = useState(false);
-  const [chartData, setChartData] = useState([])
-   const currentYear = new Date().getFullYear();
+  const [chartData, setChartData] = useState([]);
+  const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
@@ -56,24 +56,25 @@ const GlintsJobSubCategoryCard = () => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-       const params = {
+      const params = {
         source: "glints",
         month: selectedMonth,
         year: selectedYear,
         limit: selectedLimit,
       };
       const response = await Api.get("/data-visualization/job-sub-categories", {
-        params
-        })
-      const jobSubCategoryData = response.data.dataset.map(item => ({
+        params,
+      });
+      const jobSubCategoryData = response.data.dataset.map((item) => ({
         label: item.subCategory,
         total: item.amount,
       }));
-      setChartData(jobSubCategoryData)
+      setChartData(jobSubCategoryData);
     } catch (error) {
-      console.error('Error fetching job sub category data:', error);
-      message.error('Failed to load job sub category data');
-      setChartData([])
+      console.error("Error fetching job sub category data:", error);
+      message.destroy();
+      message.error("Oops! Something went wrong while loading glints job sub categories. Please try again later.");
+      setChartData([]);
     } finally {
       setLoading(false);
     }
@@ -83,10 +84,10 @@ const GlintsJobSubCategoryCard = () => {
     fetchData();
   }, [fetchData]);
 
-   const renderChart = () => {
+  const renderChart = () => {
     if (loading) {
       return (
-         <div className="flex justify-center items-center h-72">
+        <div className="flex justify-center items-center h-72">
           <Spin size="large" />
         </div>
       );
@@ -106,9 +107,9 @@ const GlintsJobSubCategoryCard = () => {
           <Select
             value={selectedMonth}
             onChange={setSelectedMonth}
-            style={{width: 110, height:48}}
+            style={{ width: 110, height: 48 }}
           >
-       {monthOptions.map((month) => (
+            {monthOptions.map((month) => (
               <Select.Option key={month.value} value={month.value}>
                 {month.label}
               </Select.Option>
@@ -121,16 +122,15 @@ const GlintsJobSubCategoryCard = () => {
           >
             {generateYearOptions()}
           </Select>
-               <Select
-                      value={selectedLimit}
-                      onChange={setSelectedLimit}
-                      style={{ width: 85, height: 48 }}
-                    >
-                       <Select.Option value={5}>Top 5</Select.Option>
-            <Select.Option value={7}>Top 7</Select.Option>
+          <Select
+            value={selectedLimit}
+            onChange={setSelectedLimit}
+            style={{ width: 85, height: 48 }}
+          >
+            <Select.Option value={5}>Top 5</Select.Option>
             <Select.Option value={10}>Top 10</Select.Option>
-            <Select.Option value={14}>Top 14</Select.Option>
-                    </Select>
+            <Select.Option value={15}>Top 15</Select.Option>
+          </Select>
         </div>
       </div>
       {renderChart()}

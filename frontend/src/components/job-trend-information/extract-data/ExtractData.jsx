@@ -207,10 +207,10 @@ const ExtractData = () => {
       setLoading(false);
     } catch (error) {
       console.error("Could not fetch the latest activity data:", error);
+      message.destroy();
       message.error(
         "Oops! We couldn’t load the latest activity. Please try again later."
       );
-      message.destroy();
       setLoading(false);
     }
   };

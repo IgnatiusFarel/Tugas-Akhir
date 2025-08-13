@@ -33,6 +33,7 @@ const ScheduleScrape = ({ open, setOpen, source, onConfirm }) => {
       setScheduledTime(null);
     } catch (error) {
       console.error("Error scheduling scrape:", error);
+      message.destroy();
       message.error("Failed to schedule scraping");
     } finally {
       setLoading(false);
