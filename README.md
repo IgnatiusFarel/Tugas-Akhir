@@ -123,8 +123,9 @@ python scrape.py
 
 ---
 
-## 9. User Manual 📚 
-Panduan lengkap penggunaan sistem: ![User Manual 👨🏻‍💻](docs/User%20Manual.pdf)
+## 9. User Manual 📚  
+Panduan lengkap penggunaan sistem dapat ditemukan di [User Manual 👨🏻‍💻](docs/User%20Manual.pdf).
+
 ---
 
 ## 10. Teknologi yang Digunakan 🛠
